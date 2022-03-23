@@ -6,6 +6,10 @@ on:
       environment:
         type: environment
         description: Select the environment
+        options:
+        - foo
+        - bar
+        - baz
       boolean:
         type: boolean
         description: True or False
