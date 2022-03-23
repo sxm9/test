@@ -3,13 +3,6 @@ name: CI
 on:
   workflow_dispatch:
     inputs:
-      environment:
-        type: environment
-        description: Select the environment
-        options:
-        - dev
-        - test
-        - prod
       boolean:
         type: boolean
         description: True or False
