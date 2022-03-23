@@ -10,9 +10,9 @@ on:
         - xyz
         - abc_client
 
-defaults:
-  run:
-    working-directory: dedicated_resources
+#defaults:
+#  run:
+#    working-directory: dedicated_resources
         
 env: 
   S3_TFVARS_FILE: "test"
