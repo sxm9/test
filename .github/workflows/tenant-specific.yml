@@ -45,6 +45,7 @@ jobs:
    #   run: terraform init -no-color
    
     - name: select workspace
+      continue-on-error: true  
       run: |
         terraform workspace list | grep -w "${{ github.event.inputs.client_name }}"
 
