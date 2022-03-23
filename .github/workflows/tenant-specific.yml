@@ -9,6 +9,10 @@ on:
         options: 
         - xyz
         - abc_client
+
+defaults:
+  run:
+    working-directory: dedicated_resources
         
 env: 
   S3_TFVARS_FILE: "test"
@@ -39,6 +43,20 @@ jobs:
    # - name: terraform init
    #   id: init
    #   run: terraform init -no-color
+   
+    - name: select workspace
+      run: |
+        terraform workspace list | grep -w "${{ github.event.inputs.client_name }}"
+
+        if [ $? == 0 ]
+        then
+          terraform workspace select ${{ github.event.inputs.client_name }}
+        else
+          terraform workspace new ${{ github.event.inputs.client_name }}
+        fi
+        
+    - name: list workspaces
+      run: terraform workspace list    
 
     - name: terraform validate
       id: validate
