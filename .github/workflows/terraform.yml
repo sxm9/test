@@ -1,4 +1,4 @@
-name: tenant-specific infra setup
+name: tenant specific infra setup
 
 on:
   workflow_dispatch:
