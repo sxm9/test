@@ -7,15 +7,43 @@ on:
         type: choice
         description: Tenant name to setup the infra
         options: 
-        - test_client
-        - cschleiden
+        - xyz
+        - abc_client
         
+env: 
+  S3_TFVARS_FILE: "test"
+      
 jobs:
   deploy-infra:
 
     runs-on: ubuntu-18.04
     
-    
     steps:
     - name: checkout code
       uses: actions/checkout@v2
+      
+    - name: fetch tfvars file
+      run: |
+        echo "aws s3 cp s3://${S3_TFVARS_FILE}/${{ github.event.inputs.choice }}.tfvar"
+      
+    - name: setup terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 0.13.0
+
+    - name: terraform fmt
+      id: fmt
+      run: terraform fmt -check -recursive -no-color .
+      continue-on-error: true
+
+   # - name: terraform init
+   #   id: init
+   #   run: terraform init -no-color
+
+    - name: terraform validate
+      id: validate
+      run: terraform validate -no-color
+      
+    - name: terraform plan
+      id: plan
+      run: echo "terraform plan --var 'client=${{ github.event.inputs.choice }}'"
