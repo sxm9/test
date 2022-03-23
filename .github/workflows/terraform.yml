@@ -1,0 +1,21 @@
+name: terraform infra automation
+
+on:
+  workflow_dispatch:
+    inputs:
+      client_name:
+        type: choice
+        description: Tenant name to setup the infra
+        options: 
+        - test_client
+        - cschleiden
+        
+jobs:
+  deploy-infra:
+
+    runs-on: ubuntu-18.04
+    
+    
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v2
