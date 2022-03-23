@@ -1,4 +1,4 @@
-name: terraform infra automation
+name: tenant specific infra setup
 
 on:
   workflow_dispatch:
