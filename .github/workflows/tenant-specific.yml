@@ -15,7 +15,7 @@ on:
 #    working-directory: dedicated_resources
         
 env: 
-  S3_TFVARS_BUCKET: "test12sdff"
+  S3_TFVARS_BUCKET: "test123hdjs"
   REGION: "us-east-1"
       
 jobs:
@@ -37,6 +37,7 @@ jobs:
     - name: fetch tfvars file
       run: |
         aws s3 cp s3://${S3_TFVARS_BUCKET}/${{ github.event.inputs.client_name }}/${{ github.event.inputs.client_name }}.tfvars .
+        aws s3 cp s3://${S3_TFVARS_BUCKET}/backend/backend.tfvars .
         cat ${{ github.event.inputs.client_name }}.tfvars
       
     - name: setup terraform
@@ -51,7 +52,7 @@ jobs:
 
     - name: terraform init
       id: init
-      run: terraform init -backend-config=${{ github.event.inputs.client_name }}.tfvars -no-color
+      run: terraform init -backend-config=backend.tfvars -no-color
    
    
   select_workspace:
