@@ -150,6 +150,7 @@ jobs:
     - uses: actions/download-artifact@v3
       with:
         name: terraform plan
+        path: pre-requisite/
         
     - name: check files
       run: |
