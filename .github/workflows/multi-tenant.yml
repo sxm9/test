@@ -8,3 +8,12 @@ on:
         description: Tenant name to setup the infra
         options: 
         - common_resources
+        
+jobs:
+  setup:
+
+    runs-on: ubuntu-18.04
+
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v2        
