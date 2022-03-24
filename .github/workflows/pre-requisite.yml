@@ -1,0 +1,28 @@
+name: terraform backend and state lock setup
+
+on:
+  workflow_dispatch:
+    inputs:
+      client_name:
+        type: choice
+        description: Tenant name to setup the infra
+        options: 
+        - pre_requisite
+
+
+defaults:
+  run:
+    working-directory: pre-requisite
+        
+env: 
+  S3_TFVARS_BUCKET: "test123hdj"
+  REGION: "us-east-1"
+      
+jobs:
+  setup:
+
+    runs-on: ubuntu-18.04
+    
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v2
