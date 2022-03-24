@@ -36,7 +36,7 @@ jobs:
 
     - name: fetch tfvars file
       run: |
-        echo "aws s3 cp s3://${S3_TFVARS_FILE}/${{ github.event.inputs.client_name }}.tfvars"
+        aws s3 cp s3://${S3_TFVARS_FILE}/${{ github.event.inputs.client_name }}.tfvars
         cat ${{ github.event.inputs.client_name }}.tfvars
       
     - name: setup terraform
