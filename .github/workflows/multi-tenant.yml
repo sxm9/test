@@ -15,7 +15,7 @@ defaults:
     working-directory: common_resources
         
 env: 
-  S3_TFVARS_BUCKET: "test12sdff"
+  S3_TFVARS_BUCKET: "test123hdjs"
   REGION: "us-east-1"
       
 jobs:
