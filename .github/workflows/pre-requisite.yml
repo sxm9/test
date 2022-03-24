@@ -65,6 +65,9 @@ jobs:
     runs-on: ubuntu-18.04
     
     steps:   
+    - name: checkout code
+      uses: actions/checkout@v2
+
     - name: terraform validate
       id: validate
       run: terraform validate -no-color
@@ -77,7 +80,10 @@ jobs:
     
     runs-on: ubuntu-18.04   
     
-    steps:   
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v2
+
     - name: terraform plan
       id: plan
       run: terraform plan -out ${{ github.event.inputs.client_name }}.plan -var-file=${{ github.event.inputs.client_name }}.tfvars
@@ -90,6 +96,9 @@ jobs:
     runs-on: ubuntu-18.04
     
     steps:   
+    - name: checkout code
+      uses: actions/checkout@v2
+
     - name: terraform apply
       id: apply
       run: terraform apply ${{ github.event.inputs.client_name }}.plan

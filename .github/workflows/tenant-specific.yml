@@ -49,9 +49,9 @@ jobs:
       run: terraform fmt -check -recursive -no-color .
       continue-on-error: true
 
-   # - name: terraform init
-   #   id: init
-   #   run: terraform init -no-color
+    - name: terraform init
+      id: init
+      run: terraform init -backend-config=${{ github.event.inputs.client_name }}.tfvars -no-color
    
    
   select_workspace:
@@ -61,6 +61,9 @@ jobs:
     runs-on: ubuntu-18.04
     
     steps:
+    - name: checkout code
+      uses: actions/checkout@v2
+
     - name: output from previous job
       run: cat ${{ github.event.inputs.client_name }}.tfvars
       
@@ -78,6 +81,8 @@ jobs:
         
     - name: list workspaces
       run: terraform workspace list 
+
+
       
   validate:
     needs:
@@ -85,33 +90,46 @@ jobs:
     
     runs-on: ubuntu-18.04
     
-    steps:   
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v2
+
     - name: terraform validate
       id: validate
       run: terraform validate -no-color
       
+
+
   plan:
     needs:
     - validate
     
     runs-on: ubuntu-18.04   
     
-    steps:   
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v2
+
     - name: terraform plan
       id: plan
-      run: echo "terraform plan --var 'client=${{ github.event.inputs.client_name }}'"
+      run: terraform plan -out ${{ github.event.inputs.client_name }}.plan -var-file=${{ github.event.inputs.client_name }}.tfvars
       
       
+
+
   apply:
     needs:
     - plan
     
     runs-on: ubuntu-18.04
     
-    steps:   
+    steps: 
+    - name: checkout code
+      uses: actions/checkout@v2
+  
     - name: terraform apply
       id: plan
-      run: echo "terraform apply ${{ github.event.inputs.client_name }}.plan"
+      run: terraform apply ${{ github.event.inputs.client_name }}.plan"
       
       
       
