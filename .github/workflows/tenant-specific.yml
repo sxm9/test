@@ -35,6 +35,7 @@ jobs:
     - name: fetch tfvars file
       run: |
         echo "aws s3 cp s3://${S3_TFVARS_FILE}/${{ github.event.inputs.client_name }}.tfvar"
+        cat ${{ github.event.inputs.client_name }}.tfvar
       
     - name: setup terraform
       uses: hashicorp/setup-terraform@v1
