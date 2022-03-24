@@ -84,6 +84,13 @@ jobs:
     - name: checkout code
       uses: actions/checkout@v2
       
+    - name: "Configure AWS Credentials" 
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+       aws-access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+       aws-region: ${{ env.REGION }}  
+      
     - name: fetch tfvars file
       run: |
         aws s3 cp s3://${S3_TFVARS_BUCKET}/${{ github.event.inputs.client_name }}/${{ github.event.inputs.client_name }}.tfvars .
@@ -91,7 +98,12 @@ jobs:
     - name: terraform plan
       id: plan
       run: terraform plan -out ${{ github.event.inputs.client_name }}.plan -var-file=${{ github.event.inputs.client_name }}.tfvars
-      
+    
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+       name: ${{ github.event.inputs.client_name }}_plan
+       path: ${{ github.event.inputs.client_name }}.plan
       
   apply:
     needs:
@@ -100,8 +112,16 @@ jobs:
     runs-on: ubuntu-18.04
     
     steps:   
-    - name: checkout code
-      uses: actions/checkout@v2
+    - name: "Configure AWS Credentials" 
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+       aws-access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+       aws-region: ${{ env.REGION }}
+       
+    - uses: actions/download-artifact@v2
+      with:
+        name: my-artifact   
 
     - name: terraform apply
       id: apply
