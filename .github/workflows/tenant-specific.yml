@@ -15,7 +15,7 @@ on:
 #    working-directory: dedicated_resources
         
 env: 
-  S3_TFVARS_FILE: "test"
+  S3_TFVARS_BUCKET: "test12sdff"
   REGION: "us-east-1"
       
 jobs:
@@ -36,7 +36,7 @@ jobs:
 
     - name: fetch tfvars file
       run: |
-        aws s3 cp s3://${S3_TFVARS_FILE}/${{ github.event.inputs.client_name }}.tfvars .
+        aws s3 cp s3://${S3_TFVARS_BUCKET}/${{ github.event.inputs.client_name }}/${{ github.event.inputs.client_name }}.tfvars .
         cat ${{ github.event.inputs.client_name }}.tfvars
       
     - name: setup terraform
