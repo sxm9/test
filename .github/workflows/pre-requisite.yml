@@ -123,7 +123,7 @@ jobs:
       if: always()
       with:
        name: terraform plan
-       path: ${{ github.event.inputs.client_name }}.plan
+       path: ./${{ github.event.inputs.client_name }}.plan
        if-no-files-found: error
        retention-days: 1
     
