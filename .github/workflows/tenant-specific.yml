@@ -26,6 +26,12 @@ jobs:
     - name: checkout code
       uses: actions/checkout@v2
       
+    - name: "Configure AWS Credentials" 
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+       aws-access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
     - name: fetch tfvars file
       run: |
         echo "aws s3 cp s3://${S3_TFVARS_FILE}/${{ github.event.inputs.client_name }}.tfvar"
@@ -100,4 +106,7 @@ jobs:
     - name: terraform apply
       id: plan
       run: echo "terraform apply ${{ github.event.inputs.client_name }}.plan"
+      
+      
+      
     
