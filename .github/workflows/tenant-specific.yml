@@ -18,7 +18,7 @@ env:
   S3_TFVARS_FILE: "test"
       
 jobs:
-  deploy-infra:
+  setup:
 
     runs-on: ubuntu-18.04
     
@@ -44,6 +44,14 @@ jobs:
    #   id: init
    #   run: terraform init -no-color
    
+   
+  select_workspace:
+    needs:
+    - setup
+    
+    runs-on: ubuntu-18.04
+    
+    steps:
     - name: select workspace
       continue-on-error: true  
       run: |
@@ -57,12 +65,39 @@ jobs:
         fi
         
     - name: list workspaces
-      run: terraform workspace list    
-
+      run: terraform workspace list 
+      
+  validate:
+    needs:
+    - select_workspace
+    
+    runs-on: ubuntu-18.04
+    
+    steps:   
     - name: terraform validate
       id: validate
       run: terraform validate -no-color
       
+  plan:
+    needs:
+    - validate
+    
+    runs-on: ubuntu-18.04   
+    
+    steps:   
     - name: terraform plan
       id: plan
       run: echo "terraform plan --var 'client=${{ github.event.inputs.client_name }}'"
+      
+      
+  apply:
+    needs:
+    - plan
+    
+    runs-on: ubuntu-18.04
+    
+    steps:   
+    - name: terraform apply
+      id: plan
+      run: echo "terraform apply ${{ github.event.inputs.client_name }}.plan"
+    
