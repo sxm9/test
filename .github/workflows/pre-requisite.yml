@@ -113,11 +113,18 @@ jobs:
       id: plan
       run: terraform plan -out ${{ github.event.inputs.client_name }}.plan -var-file=${{ github.event.inputs.client_name }}.tfvars
     
+    - name: check files
+      run: |
+        ls
+        pwd
+        tree
+        
     - uses: actions/upload-artifact@v3
       if: always()
       with:
        name: terraform plan
        path: ${{ github.event.inputs.client_name }}.plan
+       if-no-files-found: error
        retention-days: 1
     
     
@@ -142,7 +149,7 @@ jobs:
 
     - name: terraform apply
       id: apply
-      run: terraform apply ${{ github.event.inputs.client_name }}.plan
+      run: terraform apply -auto-approve ${{ github.event.inputs.client_name }}.plan
       
       
       
