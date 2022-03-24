@@ -19,7 +19,7 @@ env:
   REGION: "us-east-1"
       
 jobs:
-  setup:
+  fmt:
 
     runs-on: ubuntu-18.04
     
@@ -27,12 +27,12 @@ jobs:
     - name: checkout code
       uses: actions/checkout@v2
       
-    - name: "Configure AWS Credentials" 
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-       aws-access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-       aws-region: ${{ env.REGION }}
+   # - name: "Configure AWS Credentials" 
+   #   uses: aws-actions/configure-aws-credentials@v1
+   #   with:
+   #    aws-access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+   #    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+   #    aws-region: ${{ env.REGION }}
 
    # - name: fetch tfvars file
    #   run: |
@@ -49,24 +49,31 @@ jobs:
       run: terraform fmt -check -recursive -no-color .
       continue-on-error: true
 
+   # - name: terraform init
+   #   id: init
+   #   run: terraform init -no-color
+   #     
+   # - name: list workspaces
+   #   run: terraform workspace list 
+      
+
+
+  validate:
+    needs:
+    - fmt
+    
+    runs-on: ubuntu-18.04
+    
+    steps:   
+    - name: checkout code
+      uses: actions/checkout@v2
+
     - name: terraform init
-      id: init
+      id: init-0
       run: terraform init -no-color
         
     - name: list workspaces
       run: terraform workspace list 
-      
-
-
-#  validate:
-#    needs:
-#    - setup
-#    
-#    runs-on: ubuntu-18.04
-#    
-#    steps:   
-#    - name: checkout code
-#      uses: actions/checkout@v2
 
     - name: terraform validate
       id: validate
@@ -76,7 +83,7 @@ jobs:
       
   plan:
     needs:
-    - setup
+    - validate
     
     runs-on: ubuntu-18.04   
     
@@ -89,12 +96,19 @@ jobs:
       with:
        aws-access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-       aws-region: ${{ env.REGION }}  
+       aws-region: ${{ env.REGION }}
       
     - name: fetch tfvars file
       run: |
         aws s3 cp s3://${S3_TFVARS_BUCKET}/${{ github.event.inputs.client_name }}/${{ github.event.inputs.client_name }}.tfvars .
 
+    - name: terraform init
+      id: init-1
+      run: terraform init -no-color
+        
+    - name: list workspaces
+      run: terraform workspace list 
+      
     - name: terraform plan
       id: plan
       run: terraform plan -out ${{ github.event.inputs.client_name }}.plan -var-file=${{ github.event.inputs.client_name }}.tfvars
@@ -102,9 +116,12 @@ jobs:
     - uses: actions/upload-artifact@v3
       if: always()
       with:
-       name: ${{ github.event.inputs.client_name }}_plan
+       name: terraform plan
        path: ${{ github.event.inputs.client_name }}.plan
-      
+       retention-days: 1
+    
+    
+    
   apply:
     needs:
     - plan
@@ -119,9 +136,9 @@ jobs:
        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
        aws-region: ${{ env.REGION }}
        
-    - uses: actions/download-artifact@v2
+    - uses: actions/download-artifact@v3
       with:
-        name: my-artifact   
+        name: terraform plan
 
     - name: terraform apply
       id: apply
