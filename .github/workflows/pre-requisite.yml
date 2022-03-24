@@ -156,7 +156,11 @@ jobs:
       run: |
         ls
         pwd
-        tree    
+        tree
+        
+    - name: terraform init
+      id: init-1
+      run: terraform init -no-color
 
     - name: terraform apply
       id: apply
