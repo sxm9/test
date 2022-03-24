@@ -1,0 +1,118 @@
+name: multi tenant infra setup
+
+on:
+  workflow_dispatch:
+    inputs:
+      client_name:
+        type: choice
+        description: Tenant name to setup the infra
+        options: 
+        - common_resources
+
+
+defaults:
+  run:
+    working-directory: common_resources
+        
+env: 
+  S3_TFVARS_BUCKET: "test12sdff"
+  REGION: "us-east-1"
+      
+jobs:
+  setup:
+
+    runs-on: ubuntu-18.04
+    
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v2
+      
+    - name: "Configure AWS Credentials" 
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+       aws-access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+       aws-region: ${{ env.REGION }}
+
+    - name: fetch tfvars file
+      run: |
+        aws s3 cp s3://${S3_TFVARS_BUCKET}/${{ github.event.inputs.client_name }}/${{ github.event.inputs.client_name }}.tfvars .
+        cat ${{ github.event.inputs.client_name }}.tfvars
+      
+    - name: setup terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 0.13.0
+
+    - name: terraform fmt
+      id: fmt
+      run: terraform fmt -check -recursive -no-color .
+      continue-on-error: true
+
+   # - name: terraform init
+   #   id: init
+   #   run: terraform init -no-color
+   
+   
+  select_workspace:
+    needs:
+    - setup
+    
+    runs-on: ubuntu-18.04
+    
+    steps:
+    - name: output from previous job
+      run: cat ${{ github.event.inputs.client_name }}.tfvars
+      
+    - name: select workspace
+      continue-on-error: true  
+      run: |
+        terraform workspace list | grep -w "${{ github.event.inputs.client_name }}"
+
+        if [ $? == 0 ]
+        then
+          terraform workspace select ${{ github.event.inputs.client_name }}
+        else
+          terraform workspace new ${{ github.event.inputs.client_name }}
+        fi
+        
+    - name: list workspaces
+      run: terraform workspace list 
+      
+  validate:
+    needs:
+    - select_workspace
+    
+    runs-on: ubuntu-18.04
+    
+    steps:   
+    - name: terraform validate
+      id: validate
+      run: terraform validate -no-color
+      
+  plan:
+    needs:
+    - validate
+    
+    runs-on: ubuntu-18.04   
+    
+    steps:   
+    - name: terraform plan
+      id: plan
+      run: echo "terraform plan --var 'client=${{ github.event.inputs.client_name }}'"
+      
+      
+  apply:
+    needs:
+    - plan
+    
+    runs-on: ubuntu-18.04
+    
+    steps:   
+    - name: terraform apply
+      id: plan
+      run: echo "terraform apply ${{ github.event.inputs.client_name }}.plan"
+      
+      
+      
+    
