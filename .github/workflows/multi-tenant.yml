@@ -1,0 +1,10 @@
+name: multi tenant infra setup
+
+on:
+  workflow_dispatch:
+    inputs:
+      client_name:
+        type: choice
+        description: Tenant name to setup the infra
+        options: 
+        - common_resources
