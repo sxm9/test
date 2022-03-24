@@ -28,7 +28,7 @@ jobs:
       uses: actions/checkout@v2
       
     - name: "Configure AWS Credentials" 
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v2
       with:
        aws-access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -36,7 +36,7 @@ jobs:
 
     - name: fetch tfvars file
       run: |
-        aws s3 cp s3://${S3_TFVARS_FILE}/${{ github.event.inputs.client_name }}.tfvars
+        aws s3 cp s3://${S3_TFVARS_FILE}/${{ github.event.inputs.client_name }}.tfvars .
         cat ${{ github.event.inputs.client_name }}.tfvars
       
     - name: setup terraform
