@@ -28,7 +28,7 @@ jobs:
       uses: actions/checkout@v2
       
     - name: "Configure AWS Credentials" 
-      uses: aws-actions/configure-aws-credentials@v2
+      uses: aws-actions/configure-aws-credentials@v1
       with:
        aws-access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -61,6 +61,9 @@ jobs:
     runs-on: ubuntu-18.04
     
     steps:
+    - name: output from previous job
+      run: cat ${{ github.event.inputs.client_name }}.tfvars
+      
     - name: select workspace
       continue-on-error: true  
       run: |
