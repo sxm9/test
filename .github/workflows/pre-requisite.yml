@@ -147,6 +147,12 @@ jobs:
     - uses: actions/download-artifact@v3
       with:
         name: terraform plan
+        
+    - name: check files
+      run: |
+        ls
+        pwd
+        tree    
 
     - name: terraform apply
       id: apply
