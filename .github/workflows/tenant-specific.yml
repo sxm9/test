@@ -16,6 +16,7 @@ on:
         
 env: 
   S3_TFVARS_FILE: "test"
+  REGION: "us-east-1"
       
 jobs:
   setup:
@@ -31,6 +32,7 @@ jobs:
       with:
        aws-access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+       region: ${REGION}
 
     - name: fetch tfvars file
       run: |
