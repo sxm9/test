@@ -58,15 +58,15 @@ jobs:
       
 
 
-  validate:
-    needs:
-    - setup
-    
-    runs-on: ubuntu-18.04
-    
-    steps:   
-    - name: checkout code
-      uses: actions/checkout@v2
+#  validate:
+#    needs:
+#    - setup
+#    
+#    runs-on: ubuntu-18.04
+#    
+#    steps:   
+#    - name: checkout code
+#      uses: actions/checkout@v2
 
     - name: terraform validate
       id: validate
@@ -76,7 +76,7 @@ jobs:
       
   plan:
     needs:
-    - validate
+    - setup
     
     runs-on: ubuntu-18.04   
     
