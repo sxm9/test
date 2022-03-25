@@ -98,8 +98,7 @@ jobs:
 
 
   validate:
-    needs:
-    - fmt
+    needs: fmt
     
     runs-on: ubuntu-18.04
     
@@ -125,8 +124,7 @@ jobs:
 
       
   plan:
-    needs:
-    - validate
+    needs: validate
     
     runs-on: ubuntu-18.04   
     
@@ -173,8 +171,8 @@ jobs:
     
     
   apply:
-    needs:
-    - plan
+    needs: plan
+    environment: apply
     
     runs-on: ubuntu-18.04
     
