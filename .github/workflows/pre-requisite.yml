@@ -20,7 +20,7 @@ env:
       
 jobs:
   fmt:
-
+    environment: apply
     runs-on: ubuntu-18.04
     
     steps:
@@ -172,7 +172,6 @@ jobs:
     
   apply:
     needs: plan
-    environment: apply
     
     runs-on: ubuntu-18.04
     
