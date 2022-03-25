@@ -27,6 +27,8 @@ jobs:
     - name: checkout code
       uses: actions/checkout@v2
       
+    - run: echo "${{ github.workspace }}"
+      
    # - name: "Configure AWS Credentials" 
    #   uses: aws-actions/configure-aws-credentials@v1
    #   with:
