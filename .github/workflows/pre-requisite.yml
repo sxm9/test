@@ -71,7 +71,11 @@ jobs:
     - name: terraform init
       id: init-0
       run: terraform init -no-color
-        
+      
+    - name: terraform workspace
+      id: workspace-create
+      run: terraform workspace select ${{ github.event.inputs.client_name }} || terraform workspace new ${{ github.event.inputs.client_name }}
+
     - name: list workspaces
       run: terraform workspace list 
 
@@ -103,22 +107,21 @@ jobs:
         aws s3 cp s3://${S3_TFVARS_BUCKET}/${{ github.event.inputs.client_name }}/${{ github.event.inputs.client_name }}.tfvars .
 
     - name: terraform init
-      id: init-1
       run: terraform init -no-color
         
     - name: list workspaces
-      run: terraform workspace list 
+      run: terraform workspace list
+      
+    - name: select workspace
+      run: terraform workspace select ${{ github.event.inputs.client_name }}
       
     - name: terraform plan
       id: plan
       run: terraform plan -out ${{ github.event.inputs.client_name }}.plan -var-file=${{ github.event.inputs.client_name }}.tfvars
+      
+    - name: terraform plan out
+      run: terraform show -no-color ${{ github.event.inputs.client_name }}.plan > ${{ github.event.inputs.client_name }}_plan.txt
     
-    - name: check files
-      run: |
-        ls
-        pwd
-        tree
-        
     - name: upload artifacts
       uses: actions/upload-artifact@v3
       if: always()
@@ -152,15 +155,17 @@ jobs:
         name: terraform plan
         path: pre-requisite/
         
-    - name: check files
-      run: |
-        ls
-        pwd
-        tree
-        
     - name: terraform init
-      id: init-1
       run: terraform init -no-color
+      
+    - name: list workspaces
+      run: terraform workspace list  
+      
+    - name: select workspace
+      run: terraform workspace select ${{ github.event.inputs.client_name }}  
+      
+    - name: list workspaces
+      run: terraform workspace list  
 
     - name: terraform apply
       id: apply
