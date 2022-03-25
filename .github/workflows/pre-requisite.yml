@@ -29,7 +29,8 @@ jobs:
       
     - run: |
         echo "${{ github.workspace }}"
-        echo "${{ working-directory }}"
+        echo "${{ env.HOME }} "
+        echo  "${{ env.PATH }} "
       
    # - name: "Configure AWS Credentials" 
    #   uses: aws-actions/configure-aws-credentials@v1
