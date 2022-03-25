@@ -38,6 +38,7 @@ jobs:
                   echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
                   echo "GITHUB_SHA: ${GITHUB_SHA}"
                   echo "GITHUB_REF: ${GITHUB_REF}"
+                  echo "RUNNER_TEMP: ${RUNNER_TEMP}"
                   
                   
     - name: create files
@@ -47,12 +48,23 @@ jobs:
       uses: actions/upload-artifact@v3
       if: always()
       with:
-       name: terraform plan
+       name: plan
        path: |
          pre-requisite/terraform.plan
+         
          pre-requisite/tfplan.txt
        if-no-files-found: error
        retention-days: 1  
+       
+    - name: upload artifacts
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+       name: terraform plan output
+       path: |         
+         pre-requisite/tfplan.txt
+       if-no-files-found: error
+       retention-days: 1     
       
    # - name: "Configure AWS Credentials" 
    #   uses: aws-actions/configure-aws-credentials@v1
