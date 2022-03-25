@@ -29,7 +29,6 @@ jobs:
       
     - run: |
         echo "${{ github.workspace }}"
-        echo "${{ run.working-directory }}"
         echo "${{ working-directory }}"
       
    # - name: "Configure AWS Credentials" 
