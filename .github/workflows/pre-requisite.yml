@@ -29,7 +29,6 @@ jobs:
       
     - run: |
         echo "${{ github.workspace }}"
-        echo "${{ defaults.run.working-directory }}"
         echo "${{ run.working-directory }}"
         echo "${{ working-directory }}"
       
