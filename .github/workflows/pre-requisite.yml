@@ -27,11 +27,32 @@ jobs:
     - name: checkout code
       uses: actions/checkout@v2
       
-    - run: |
-        echo "${{ github.workspace }}"
-        echo "${{ defaults.run }} "
-        echo "${{ env.HOME }} "
-        echo  "${{ env.PATH }} "
+    - name: echo-default-env-variables
+      run: |
+                  echo "Home: ${HOME}"
+                  echo "GITHUB_WORKFLOW: ${GITHUB_WORKFLOW}"
+                  echo "GITHUB_ACTIONS: ${GITHUB_ACTIONS}"
+                  echo "GITHUB_ACTOR: ${GITHUB_ACTOR}"
+                  echo "GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}"
+                  echo "GITHUB_EVENT_NAME: ${GITHUB_EVENT_NAME}"
+                  echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
+                  echo "GITHUB_SHA: ${GITHUB_SHA}"
+                  echo "GITHUB_REF: ${GITHUB_REF}"
+                  
+                  
+    - name: create files
+      run: touch tfplan.txt terraform.plan
+      
+    - name: upload artifacts
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+       name: terraform plan
+       path: |
+         pre-requisite/terraform.plan
+         pre-requisite/tfplan.txt
+       if-no-files-found: error
+       retention-days: 1  
       
    # - name: "Configure AWS Credentials" 
    #   uses: aws-actions/configure-aws-credentials@v1
