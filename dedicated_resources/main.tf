@@ -33,6 +33,20 @@ resource "aws_key_pair" "key_pair" {
 }
 
 
+######################################
+# Variables
+######################################
+
+variable "region" {
+  type        = string
+  description = "The region in which infra to be deployed"
+}
+
+variable "aws_cli_profile" {
+  type        = string
+  description = "The credential using which infra to be deployed"
+}
+
 variable "client_name" {
   type        = string
   description = "The tenant name for which infra to be deployed"
