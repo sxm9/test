@@ -20,63 +20,12 @@ env:
       
 jobs:
   fmt:
-    environment: apply
+  
     runs-on: ubuntu-18.04
     
     steps:
     - name: checkout code
       uses: actions/checkout@v2
-      
-    - name: echo-default-env-variables
-      run: |
-                  echo "Home: ${HOME}"
-                  echo "GITHUB_WORKFLOW: ${GITHUB_WORKFLOW}"
-                  echo "GITHUB_ACTIONS: ${GITHUB_ACTIONS}"
-                  echo "GITHUB_ACTOR: ${GITHUB_ACTOR}"
-                  echo "GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}"
-                  echo "GITHUB_EVENT_NAME: ${GITHUB_EVENT_NAME}"
-                  echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
-                  echo "GITHUB_SHA: ${GITHUB_SHA}"
-                  echo "GITHUB_REF: ${GITHUB_REF}"
-                  echo "RUNNER_TEMP: ${RUNNER_TEMP}"
-                  
-                  
-    - name: create files
-      run: touch tfplan.txt terraform.plan
-      
-    - name: upload artifacts
-      uses: actions/upload-artifact@v3
-      if: always()
-      with:
-       name: plan
-       path: |
-         pre-requisite/terraform.plan
-         
-         pre-requisite/tfplan.txt
-       if-no-files-found: error
-       retention-days: 1  
-       
-    - name: upload artifacts
-      uses: actions/upload-artifact@v3
-      if: always()
-      with:
-       name: terraform plan output
-       path: |         
-         pre-requisite/tfplan.txt
-       if-no-files-found: error
-       retention-days: 1     
-      
-   # - name: "Configure AWS Credentials" 
-   #   uses: aws-actions/configure-aws-credentials@v1
-   #   with:
-   #    aws-access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-   #    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-   #    aws-region: ${{ env.REGION }}
-
-   # - name: fetch tfvars file
-   #   run: |
-   #     aws s3 cp s3://${S3_TFVARS_BUCKET}/${{ github.event.inputs.client_name }}/${{ github.event.inputs.client_name }}.tfvars .
-   #     cat ${{ github.event.inputs.client_name }}.tfvars
       
     - name: setup terraform
       uses: hashicorp/setup-terraform@v1
@@ -87,15 +36,8 @@ jobs:
       id: fmt
       run: terraform fmt -check -recursive -no-color .
       continue-on-error: true
-
-   # - name: terraform init
-   #   id: init
-   #   run: terraform init -no-color
-   #     
-   # - name: list workspaces
-   #   run: terraform workspace list 
       
-
+    - run: terraform version
 
   validate:
     needs: fmt
@@ -105,6 +47,8 @@ jobs:
     steps:   
     - name: checkout code
       uses: actions/checkout@v2
+      
+    - run: terraform version  
 
     - name: terraform init
       id: init-0
@@ -156,22 +100,33 @@ jobs:
       id: plan
       run: terraform plan -out ${{ github.event.inputs.client_name }}.plan -var-file=${{ github.event.inputs.client_name }}.tfvars
       
-    - name: terraform plan out
+    - name: terraform plan output
       run: terraform show -no-color ${{ github.event.inputs.client_name }}.plan > ${{ github.event.inputs.client_name }}_plan.txt
     
-    - name: upload artifacts
+    - name: upload terraform plan
       uses: actions/upload-artifact@v3
       if: always()
       with:
-       name: terraform plan
+       name: tf-xxx
        path: pre-requisite/${{ github.event.inputs.client_name }}.plan
        if-no-files-found: error
        retention-days: 1
+       
+    - name: upload terraform plan output
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+       name: tf plan output
+       path: pre-requisite/${{ github.event.inputs.client_name }}_plan.txt
+       if-no-files-found: error
+       retention-days: 1   
     
     
     
   apply:
     needs: plan
+    
+    environment: terraform apply
     
     runs-on: ubuntu-18.04
     
@@ -186,9 +141,10 @@ jobs:
        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
        aws-region: ${{ env.REGION }}
        
-    - uses: actions/download-artifact@v3
+    - name: download terraform plan
+      uses: actions/download-artifact@v3
       with:
-        name: terraform plan
+        name: tf-xxx
         path: pre-requisite/
         
     - name: terraform init
