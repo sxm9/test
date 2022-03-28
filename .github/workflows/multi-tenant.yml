@@ -128,7 +128,7 @@ jobs:
       if: always()
       with:
        name: tf-xxx
-       path: pre-requisite/${{ github.event.inputs.client_name }}.plan
+       path: common_resources/${{ github.event.inputs.client_name }}.plan
        if-no-files-found: error
        retention-days: 1
        
@@ -137,7 +137,7 @@ jobs:
       if: always()
       with:
        name: tf plan output
-       path: pre-requisite/${{ github.event.inputs.client_name }}_plan.txt
+       path: common_resources/${{ github.event.inputs.client_name }}_plan.txt
        if-no-files-found: error
        retention-days: 1   
     
@@ -165,7 +165,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: tf-xxx
-        path: pre-requisite/
+        path: common_resources/
         
     - name: fetch tfvars file
       run: |
