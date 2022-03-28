@@ -36,11 +36,24 @@ resource "aws_cloudwatch_event_rule" "trigger_sf_raw_to_parquet_trigger" {
 }
 
 
+#####################################
+# Variables
+#####################################
+
+variable "region" {
+  type        = string
+  description = "The region in which infra to be deployed"
+}
+
+variable "aws_cli_profile" {
+  type        = string
+  description = "The credential using which infra to be deployed"
+}
+
 variable "client_name" {
   type        = string
   description = "The tenant name for which infra to be deployed"
 }
-
 
 variable "lambda_name" {
   type        = string
