@@ -118,7 +118,9 @@ jobs:
       
     - name: terraform plan
       id: plan
-      run: terraform plan -out ${{ github.event.inputs.client_name }}.plan -var-file=${{ github.event.inputs.client_name }}.tfvars
+      run: terraform plan -out ${{ github.event.inputs.client_name }}.plan \
+                          -var 'region=${REGION}' -var 'aws_cli_profile=default' \
+                          -var-file=${{ github.event.inputs.client_name }}.tfvars
       
     - name: terraform plan output
       run: terraform show -no-color ${{ github.event.inputs.client_name }}.plan > ${{ github.event.inputs.client_name }}_plan.txt
