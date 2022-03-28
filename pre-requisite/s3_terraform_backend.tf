@@ -1,10 +1,7 @@
-resource "aws_s3_bucket" "raw_data" {
+resource "aws_s3_bucket" "backend_bucket" {
   bucket        = var.s3_backend_bucket
   acl           = "private"
   force_destroy = true
-  versioning_configuration {
-    status = "Enabled"
-  }
 
 #  server_side_encryption_configuration {
 #    rule {
@@ -20,7 +17,15 @@ resource "aws_s3_bucket" "raw_data" {
   }
 }
 
-resource "aws_dynamodb_table" "terraform_locks" {
+resource "aws_s3_bucket_versioning" "versioning_example" {
+  bucket = aws_s3_bucket.backend_bucket.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+
+resource "aws_dynamodb_table" "terraform_state_locks" {
   name         = var.dynamodb_lock_table
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "LockID"
@@ -28,6 +33,7 @@ resource "aws_dynamodb_table" "terraform_locks" {
     name = "LockID"
     type = "S"
   }
+  
   tags = {
    use = "table for terraform lock"
  }
