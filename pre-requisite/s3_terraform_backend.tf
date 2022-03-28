@@ -2,6 +2,10 @@ resource "aws_s3_bucket" "backend_bucket" {
   bucket        = var.s3_backend_bucket
   acl           = "private"
   force_destroy = true
+  
+   versioning {
+    enabled = true
+  }
 
 #  server_side_encryption_configuration {
 #    rule {
@@ -14,13 +18,6 @@ resource "aws_s3_bucket" "backend_bucket" {
 #
   tags = {
     use = "storing terraform state file"
-  }
-}
-
-resource "aws_s3_bucket_versioning" "versioning_example" {
-  bucket = aws_s3_bucket.backend_bucket.id
-  versioning_configuration {
-    status = "Enabled"
   }
 }
 
