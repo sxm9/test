@@ -155,6 +155,8 @@ jobs:
     - name: list workspaces
       run: terraform workspace list  
       
+    - run: terraform workspace select ${{ github.event.inputs.client_name }} || terraform workspace new ${{ github.event.inputs.client_name }}  
+      
     - name: select workspace
       run: terraform workspace select ${{ github.event.inputs.client_name }}  
       
