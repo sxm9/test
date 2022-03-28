@@ -54,6 +54,8 @@ jobs:
        aws-access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
        aws-region: ${{ env.REGION }}  
+       
+    - run: terraform force-unlock a7af79b3-b768-db9c-688b-135837205729
       
     - name: fetch tfvars file
       run: |
