@@ -66,10 +66,7 @@ jobs:
         
     - name: terraform init
       id: init-0
-      run: terraform init -backend-config=backend.tfvars -no-color
-      
-    - run: terraform force-unlock -force a7af79b3-b768-db9c-688b-135837205729
-  
+      run: terraform init -backend-config=backend.tfvars -no-color  
       
     - name: terraform select workspace
       id: workspace
