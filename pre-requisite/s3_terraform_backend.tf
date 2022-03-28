@@ -2,6 +2,9 @@ resource "aws_s3_bucket" "raw_data" {
   bucket        = var.s3_backend_bucket
   acl           = "private"
   force_destroy = true
+  versioning_configuration {
+    status = "Enabled"
+  }
 
 #  server_side_encryption_configuration {
 #    rule {
