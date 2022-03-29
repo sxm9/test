@@ -8,7 +8,7 @@ on:
         description: Tenant name to setup the infra
         options: 
         - xyz
-        - abc_client
+        - test_client
 
 defaults:
   run:
