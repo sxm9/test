@@ -30,7 +30,7 @@ resource "tls_private_key" "ssh_key" {
 
 resource "aws_key_pair" "key_pair" {
   key_name   = "${var.client_name}-${var.key_pair_name}"
-  public_key = tls_private_key.ssh_key[0].public_key_openssh
+  public_key = tls_private_key.ssh_key.public_key_openssh
 
   tags = {
     "tenant" = "${var.client_name}",
