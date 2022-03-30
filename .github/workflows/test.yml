@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      choice:
+        type: choice
+        description: Select client name to deploy the infra
+        options:
+   
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: greet
+        run: | 
+          echo "choice is ${{ github.event.inputs.choice }}"
