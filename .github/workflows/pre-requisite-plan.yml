@@ -1,4 +1,4 @@
-name: terraform backend and state lock setup
+name: terraform backend and state lock setup - plan
 
 on:
   workflow_dispatch:
@@ -125,53 +125,47 @@ jobs:
     
     
     
-  apply:
-    needs: plan
-    
+#  apply:
+#    needs: plan
+#    
 #    environment: terraform apply
-    
-    runs-on: ubuntu-18.04
-    
-    steps:
-    
-    - uses: trstringer/manual-approval@v1
-        with:
-          secret: ${{ github.TOKEN }}
-          approvers: sxm9
-
-    - name: checkout code
-      uses: actions/checkout@v2
-      
-    - name: "Configure AWS Credentials" 
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-       aws-access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-       aws-region: ${{ env.REGION }}
-       
-    - name: download terraform plan
-      uses: actions/download-artifact@v3
-      with:
-        name: tf-xxx
-        path: pre-requisite/
-        
-    - name: terraform init
-      run: terraform init -no-color
-      
-    - name: list workspaces
-      run: terraform workspace list  
-      
-    - run: terraform workspace select ${{ github.event.inputs.client_name }} || terraform workspace new ${{ github.event.inputs.client_name }}  
-      
-    - name: select workspace
-      run: terraform workspace select ${{ github.event.inputs.client_name }}  
-      
-    - name: list workspaces
-      run: terraform workspace list  
-
-    - name: terraform apply
-      id: apply
-      run: terraform apply -auto-approve ${{ github.event.inputs.client_name }}.plan
+#    
+#    runs-on: ubuntu-18.04
+#    
+#    steps:
+#    - name: checkout code
+#      uses: actions/checkout@v2
+#      
+#    - name: "Configure AWS Credentials" 
+#      uses: aws-actions/configure-aws-credentials@v1
+#      with:
+#       aws-access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+#       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#       aws-region: ${{ env.REGION }}
+#       
+#    - name: download terraform plan
+#      uses: actions/download-artifact@v3
+#      with:
+#        name: tf-xxx
+#        path: pre-requisite/
+#        
+#    - name: terraform init
+#      run: terraform init -no-color
+#      
+#    - name: list workspaces
+#      run: terraform workspace list  
+#      
+#    - run: terraform workspace select ${{ github.event.inputs.client_name }} || terraform workspace new ${{ github.event.inputs.client_name }}  
+#      
+#    - name: select workspace
+#      run: terraform workspace select ${{ github.event.inputs.client_name }}  
+#      
+#    - name: list workspaces
+#      run: terraform workspace list  
+#
+#    - name: terraform apply
+#      id: apply
+#      run: terraform apply -auto-approve ${{ github.event.inputs.client_name }}.plan
       
       
       

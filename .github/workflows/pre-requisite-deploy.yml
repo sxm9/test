@@ -1,0 +1,72 @@
+name: terraform backend and state lock setup
+
+on:
+  workflow_dispatch:
+    inputs:
+      client_name:
+        type: choice
+        description: Tenant name to setup the infra
+        options: 
+        - pre_requisite
+
+
+defaults:
+  run:
+    working-directory: pre-requisite
+        
+env: 
+  S3_TFVARS_BUCKET: "test123hdjs"
+  REGION: "us-east-1"
+      
+jobs:
+    
+  apply:
+    
+    runs-on: ubuntu-18.04
+    
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v2
+      
+    - name: "Configure AWS Credentials" 
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+       aws-access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+       aws-region: ${{ env.REGION }}
+       
+   # - name: download terraform plan
+   #   uses: actions/download-artifact@v3
+   #   with:
+   #     name: tf-xxx
+   #     path: pre-requisite/
+ 
+    - name: fetch tfvars file
+      run: |
+        aws s3 cp s3://${S3_TFVARS_BUCKET}/${{ github.event.inputs.client_name }}/${{ github.event.inputs.client_name }}.tfvars .
+        
+    - name: terraform init
+      run: terraform init -no-color
+      
+    - name: list workspaces
+      run: terraform workspace list  
+      
+    - run: terraform workspace select ${{ github.event.inputs.client_name }} || terraform workspace new ${{ github.event.inputs.client_name }}  
+      
+    - name: select workspace
+      run: terraform workspace select ${{ github.event.inputs.client_name }}  
+      
+    - name: list workspaces
+      run: terraform workspace list  
+
+    - name: terraform plan
+      id: plan
+      run: terraform plan -out ${{ github.event.inputs.client_name }}.plan -var-file=${{ github.event.inputs.client_name }}.tfvars
+
+    - name: terraform apply
+      id: apply
+      run: terraform apply -auto-approve ${{ github.event.inputs.client_name }}.plan
+      
+      
+      
+    
